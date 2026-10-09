@@ -24,7 +24,7 @@ const modal = createAppKit({
   networks: [botTestnet, botMainnet],
   defaultNetwork: botMainnet,
   projectId: PROJECT_ID,
-  metadata: { name: 'Nectar', description: 'Lending protocol on BOT Chain', url: 'https://nectar.botchain.io', icons: ['https://nectar.botchain.io/logo.png'] },
+  metadata: { name: 'Nectar', description: 'Lending protocol on BOT Chain', url: location.origin, icons: [location.origin + '/logo.png'] },
   themeVariables: { '--w3m-accent': '#10b981' },
   features: { analytics: false },
 });
