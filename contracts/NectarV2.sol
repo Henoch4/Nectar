@@ -96,6 +96,8 @@ contract NectarV2 is ReentrancyGuard, Ownable {
         _updateReward(msg.sender);
         deposits[msg.sender] += amount;
         totalDeposits += amount;
+        // re-snapshot on the NEW balance so fresh deposits earn nothing retroactively
+        rewardDebt[msg.sender] = deposits[msg.sender] * rewardIndex / 1e18;
         emit Deposit(msg.sender, amount);
     }
 
@@ -106,6 +108,8 @@ contract NectarV2 is ReentrancyGuard, Ownable {
         require(debtOf(msg.sender) <= (deposits[msg.sender] - amount) * COLLATERAL_FACTOR / 100, "Would exceed collateral");
         deposits[msg.sender] -= amount;
         totalDeposits -= amount;
+        // re-snapshot on the NEW balance so withdrawn funds stop earning
+        rewardDebt[msg.sender] = deposits[msg.sender] * rewardIndex / 1e18;
         botToken.safeTransfer(msg.sender, amount);
         emit Withdraw(msg.sender, amount);
     }
