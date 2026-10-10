@@ -1,160 +1,259 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nectar — Lend and borrow on BOT Chain</title>
-<link rel="icon" type="image/png" href="./logo.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#060a08;--panel:#0c1210;--panel-2:#111a16;--accent:#10b981;--accent-soft:#34d399;--danger:#ef4444;--text:#e7f5ef;--muted:#6f8a7e;--hairline:rgba(231,245,239,.09);--hairline-strong:rgba(231,245,239,.18)}
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;line-height:1.5;min-height:100vh}
-a{color:inherit;text-decoration:none}
-.mono{font-family:'Courier New',monospace}
-.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
-nav{border-bottom:1px solid var(--hairline);background:var(--bg)}
-.nav-inner{display:flex;align-items:center;justify-content:space-between;height:56px}
-.logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:15px;letter-spacing:.06em;text-transform:uppercase}
-.logo-mark{width:16px;height:16px;background:var(--accent);border-radius:3px;box-shadow:0 0 12px rgba(16,185,129,.5)}
-.nav-links{display:flex;align-items:center;gap:22px;font-size:13px;color:var(--muted)}
-.nav-links a:hover{color:var(--accent)}
-.btn{font-family:'Inter',sans-serif;font-weight:600;font-size:13px;padding:9px 16px;border-radius:5px;border:none;cursor:pointer;min-height:38px;transition:all .15s}
-.btn-primary{background:var(--accent);color:#041009}
-.btn-primary:hover{background:var(--accent-soft)}
-.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--hairline-strong)}
-.btn-ghost:hover{border-color:var(--accent)}
-select#netSel{background:var(--panel);border:1px solid var(--hairline-strong);border-radius:5px;font-family:'Courier New',monospace;font-size:12px;padding:8px;min-height:38px;color:var(--text)}
-.ticker{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--hairline)}
-.ticker .cell{padding:14px 24px;border-right:1px solid var(--hairline);display:flex;justify-content:space-between;align-items:baseline;gap:12px}
-.ticker .cell:last-child{border-right:none}
-.ticker .k{font-family:'Courier New',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-.ticker .v{font-family:'Courier New',monospace;font-size:15px;font-weight:700;color:var(--accent)}
-.page-head{display:flex;align-items:center;justify-content:space-between;padding:28px 0 20px;gap:16px;flex-wrap:wrap}
-.page-head h1{font-size:26px;font-weight:800;letter-spacing:-.01em}
-.badge{font-family:'Courier New',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);border-radius:4px;padding:5px 10px}
-.main-grid{display:grid;grid-template-columns:1.7fr 1fr;gap:18px;align-items:start;padding-bottom:40px}
-@media(max-width:860px){.main-grid{grid-template-columns:1fr}.ticker{grid-template-columns:1fr}.ticker .cell{border-right:none;border-bottom:1px solid var(--hairline)}}
-.panel{background:var(--panel);border:1px solid var(--hairline-strong);border-radius:6px;margin-bottom:18px}
-.panel-head{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--hairline)}
-.panel-head h3{font-family:'Courier New',monospace;font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
-.panel-head .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
-.action-row{display:grid;grid-template-columns:110px 1fr auto;gap:12px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--hairline)}
-.action-row:last-child{border-bottom:none}
-.action-row label{font-family:'Courier New',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-.action-row input{width:100%;background:var(--bg);border:1px solid var(--hairline);border-radius:4px;color:var(--text);font-family:'Courier New',monospace;font-size:14px;padding:9px 12px;min-height:38px}
-.action-row input:focus{outline:2px solid var(--accent);outline-offset:0}
-.kv{display:flex;justify-content:space-between;padding:11px 16px;border-bottom:1px solid var(--hairline);font-size:13px;color:var(--muted)}
-.kv:last-child{border-bottom:none}
-.kv b{font-family:'Courier New',monospace;color:var(--text)}
-.health-big{padding:20px 16px 8px;text-align:left}
-.health-big .num{font-family:'Courier New',monospace;font-size:52px;font-weight:700;color:var(--accent);line-height:1}
-.health-big .cap{font-family:'Courier New',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:6px}
-.gauge{height:10px;border-radius:3px;background:var(--panel-2);margin:14px 16px 18px;overflow:hidden}
-.gauge-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-soft));width:0%;transition:width .4s}
-.gauge-fill.danger{background:var(--danger)}
-.steps{border-top:1px solid var(--hairline-strong);display:grid;grid-template-columns:repeat(3,1fr);margin-bottom:44px}
-@media(max-width:760px){.steps{grid-template-columns:1fr}}
-.step{padding:22px 20px 8px;border-right:1px solid var(--hairline)}
-.step:last-child{border-right:none}
-.step .n{font-family:'Courier New',monospace;font-size:12px;color:var(--accent);letter-spacing:.1em}
-.step h4{font-size:15px;margin:8px 0 6px}
-.step p{font-size:13px;color:var(--muted)}
-footer{padding:36px 0;border-top:1px solid var(--hairline);color:var(--muted);font-size:13px}
-.proof{margin-top:20px;padding:16px 18px;background:var(--panel);border:1px solid var(--hairline-strong);border-radius:6px;max-width:380px}
-.proof-title{font-family:'Courier New',monospace;font-size:11px;font-weight:600;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px}
-.proof-grid{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-family:'Courier New',monospace;font-size:12px;color:var(--muted)}
-.proof-grid .val{color:var(--accent);overflow-wrap:anywhere}
-.proof-link{display:inline-block;margin-top:10px;font-family:'Courier New',monospace;font-size:11px;color:var(--accent);border-bottom:1px solid var(--accent)}
-</style>
-</head>
-<body>
-<nav><div class="wrap nav-inner">
-<div class="logo"><div class="logo-mark"></div>Nectar</div>
-<div class="nav-links">
-<a href="#actions">Actions</a>
-<a href="#risk">Risk</a>
-<a href="#how">How it works</a>
-<select id="netSel"><option value="968">Testnet 968</option><option value="677" selected>Mainnet 677</option></select>
-<button class="btn btn-primary" id="connectBtn">Connect wallet</button>
-</div>
-</div></nav>
-
-<div class="ticker">
-<div class="cell"><span class="k">Total value locked</span><span class="v" id="statTVL">—</span></div>
-<div class="cell"><span class="k">Total borrows</span><span class="v" id="statBorrows">—</span></div>
-<div class="cell"><span class="k">Borrow APY</span><span class="v" id="statRate">5%</span></div>
-</div>
-
-<div class="wrap">
-<div class="page-head">
-<h1>Lend BOT. Earn yield. Borrow when you need it.</h1>
-<span class="badge">Market · Chain 677</span>
-</div>
-
-<div class="main-grid">
-<div>
-<div class="panel" id="actions">
-<div class="panel-head"><h3>Supply &amp; borrow</h3><div class="dot"></div></div>
-<div class="action-row"><label>Deposit</label><input id="depAmt" type="number" step="0.001" placeholder="1.000"><button class="btn btn-primary" id="depBtn">Deposit →</button></div>
-<div class="action-row"><label>Borrow</label><input id="borrowAmt" type="number" step="0.001" placeholder="0.500"><button class="btn btn-primary" id="borrowBtn">Borrow →</button></div>
-<div class="action-row"><label>Repay</label><input id="repayAmt" type="number" step="0.001" placeholder="0.100"><button class="btn btn-ghost" id="repayBtn">Repay →</button></div>
-<div class="action-row"><label>Withdraw</label><input id="wdAmt" type="number" step="0.001" placeholder="0.500"><button class="btn btn-ghost" id="wdBtn">Withdraw →</button></div>
-<div class="action-row"><label>Lender rewards</label><button class="btn btn-primary" id="claimBtn" style="grid-column:2/4">Claim →</button></div>
-</div>
-<div class="panel">
-<div class="panel-head"><h3>Your position</h3><div class="dot"></div></div>
-<div class="kv"><span>Your deposit</span><b id="yourDeposit">—</b></div>
-<div class="kv"><span>Your borrow</span><b id="yourBorrow">—</b></div>
-<div class="kv"><span>Accrued interest</span><b id="yourInterest">—</b></div>
-<div class="kv"><span>Lender rewards</span><b id="yourRewards">—</b></div>
-<div class="kv"><span>Withdraw anytime</span><b>no lock</b></div>
-<div class="kv"><span>Repay anytime</span><b>no penalty</b></div>
-</div>
-</div>
-
-<div>
-<div class="panel" id="risk">
-<div class="panel-head"><h3>Risk monitor</h3><div class="dot"></div></div>
-<div class="health-big"><div class="num" id="healthFactor">—</div><div class="cap">Health factor · stay above 100%</div></div>
-<div class="gauge"><div class="gauge-fill" id="healthFill" style="width:0%"></div></div>
-<div class="kv"><span>Collateral</span><b id="riskCollateral">—</b></div>
-<div class="kv"><span>Debt</span><b id="riskDebt">—</b></div>
-<div class="kv"><span>Liquidation threshold</span><b>80%</b></div>
-</div>
-<div class="panel">
-<div class="panel-head"><h3>Market rules</h3><div class="dot"></div></div>
-<div class="kv"><span>Collateral factor</span><b>75%</b></div>
-<div class="kv"><span>Borrow rate</span><b>5% APY</b></div>
-<div class="kv"><span>Enforcement</span><b>on-chain</b></div>
-</div>
-</div>
-</div>
-
-<div class="steps" id="how">
-<div class="step"><div class="n">01</div><h4>Deposit</h4><p>Lock BOT as collateral. Your deposit earns yield from borrower interest.</p></div>
-<div class="step"><div class="n">02</div><h4>Borrow</h4><p>Borrow up to 75% of your collateral value. Interest accrues at 5% APY.</p></div>
-<div class="step"><div class="n">03</div><h4>Manage</h4><p>Repay anytime, withdraw anytime. Stay above 100% health to avoid liquidation.</p></div>
-</div>
-
-<footer>
-<p>Nectar — lending protocol on BOT Chain. Audited contracts, enforced on-chain.</p>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Nectar — Lend and borrow on BOT Chain</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Young+Serif&display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap" rel="stylesheet"><style>:root{--bg:#fff0e8;--fg:#2a1230;--mut:#7a5a84;--line:#f3d6cd;--card:#ffffff;--acc:#c42a63;--acc2:#ffa17a;--onacc:#ffffff}@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b0e22;--fg:#fbf0e8;--mut:#b9a3c2;--line:#3d2347;--card:#281530;--acc:#ff8aa8;--acc2:#ff9a6b;--onacc:#1b0e22}}@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#fff0e8;--fg:#2a1230;--mut:#7a5a84;--line:#f3d6cd;--card:#ffffff;--acc:#c42a63;--acc2:#ffa17a;--onacc:#ffffff}}:root[data-theme="dark"]{--bg:#1b0e22;--fg:#fbf0e8;--mut:#b9a3c2;--line:#3d2347;--card:#281530;--acc:#ff8aa8;--acc2:#ff9a6b;--onacc:#1b0e22}:root[data-theme="light"]{--bg:#fff0e8;--fg:#2a1230;--mut:#7a5a84;--line:#f3d6cd;--card:#ffffff;--acc:#c42a63;--acc2:#ffa17a;--onacc:#ffffff}*,*:before,*:after{box-sizing:border-box}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-behavior:smooth;scroll-padding-top:calc(90px + env(safe-area-inset-top,0px))}body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);overflow-x:hidden;-webkit-font-smoothing:antialiased}a{color:inherit;text-decoration:none}button,input,select,textarea{font:inherit;color:inherit}.rv{opacity:0;transform:translateY(40px);transition:1s cubic-bezier(.2,.9,.2,1)}.rv.in{opacity:1;transform:none}.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));translate:-50% 220%;background:var(--fg);color:var(--bg);padding:14px 24px;border-radius:99px;z-index:100;transition:translate .5s cubic-bezier(.2,.9,.2,1);font-size:14px;max-width:90vw;text-align:center}.toast.on{translate:-50% 0}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
+:root{--serif:'Young Serif',Georgia,serif;--sans:'Outfit',system-ui,sans-serif}
+.nav{display:flex;justify-content:space-between;align-items:center;padding:calc(18px + env(safe-area-inset-top,0px)) clamp(16px,4vw,48px) 18px;max-width:1360px;margin:0 auto}
+.lg{font-family:var(--serif);font-size:30px;display:flex;align-items:center;gap:10px}.lg i{width:28px;height:28px;border-radius:50% 50% 50% 8px;background:linear-gradient(135deg,var(--acc2),var(--acc));display:block;rotate:-45deg}
+.btn{all:unset;cursor:pointer;background:var(--fg);color:var(--bg);padding:13px 24px;border-radius:99px;font-weight:500;transition:.3s}.btn:hover{background:var(--acc);color:var(--onacc)}
+.bento{display:grid;grid-template-columns:repeat(12,1fr);gap:20px;max-width:1360px;margin:0 auto;padding:0 clamp(16px,4vw,48px) 20px}
+.t{border-radius:36px;padding:36px;background:var(--card);border:1px solid var(--line);position:relative;overflow:hidden}
+.h{grid-column:span 8;min-height:460px;display:flex;flex-direction:column;justify-content:flex-end;background:linear-gradient(145deg,color-mix(in srgb,var(--acc2) 35%,var(--card)),var(--card))}
+.h h1{font-family:var(--serif);font-weight:400;font-size:clamp(44px,6.4vw,92px);line-height:1;margin:0 0 18px;position:relative}
+.h p{font-size:20px;color:var(--mut);max-width:460px;margin:0;position:relative;line-height:1.5}
+.bl{position:absolute;border-radius:50%;filter:blur(36px);animation:fl 9s ease-in-out infinite}
+.b1{width:260px;height:260px;background:var(--acc2);right:-40px;top:-40px;opacity:.7}.b2{width:200px;height:200px;background:var(--acc);right:140px;top:80px;opacity:.45;animation-delay:-3s}.b3{width:140px;height:140px;background:#ffd6a8;right:30px;top:200px;opacity:.7;animation-delay:-6s}
+@keyframes fl{50%{transform:translate(-30px,24px) scale(1.12)}}
+.k{grid-column:span 4;display:flex;flex-direction:column;justify-content:space-between}.k b{font-family:var(--serif);font-weight:400;font-size:clamp(72px,9vw,128px);line-height:.9}.k span{font-size:18px;color:var(--mut)}
+.k1{background:var(--acc2);color:#2a1230}.k1 span{color:#4a2a3a}.k2{background:var(--acc);color:var(--onacc)}.k2 span{color:var(--onacc)}
+.calc{grid-column:span 7}.gau{grid-column:span 5;text-align:center}
+.calc h3,.gau h3,.how h3{font-family:var(--serif);font-weight:400;font-size:32px;margin:0 0 20px}
+.sl label{display:flex;justify-content:space-between;font-size:15px;color:var(--mut);margin-top:22px}.sl label b{color:var(--fg);font-size:22px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:12px;border-radius:99px;background:var(--line);outline:0;margin:12px 0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:var(--acc);border:5px solid var(--card);box-shadow:0 2px 10px #0003}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--acc);border:5px solid var(--card)}
+.out{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px}.out div{padding:16px 18px;border-radius:20px;background:var(--bg)}.out span{display:block;font-size:13px;color:var(--mut)}.out b{font-size:24px}
+.acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.acts button{all:unset;cursor:pointer;padding:12px 20px;border-radius:99px;border:1px solid var(--line);font-weight:500}.acts button:hover{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
+.hv{font-family:var(--serif);font-size:72px;line-height:1}.stt{font-size:18px;font-weight:500;margin-top:6px}
+.k3{grid-column:span 3}.k3 b{font-family:var(--serif);font-weight:400;font-size:64px}.k3 span{display:block;color:var(--mut);margin-top:6px}
+.how{grid-column:span 12;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;background:none;border:0;padding:0}.how .t{padding:32px}
+.how i{font-family:var(--serif);font-style:normal;font-size:64px;color:var(--acc);line-height:1;display:block;margin-bottom:10px}.how p{color:var(--mut);margin:0;line-height:1.5;font-size:18px}
+footer{max-width:1360px;margin:40px auto 0;padding:32px clamp(16px,4vw,48px);display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;color:var(--mut)}
+@media(max-width:900px){.h,.k,.calc,.gau,.k3{grid-column:span 12}.k3{grid-column:span 6}.how{grid-template-columns:1fr}}
+.nav select{background:var(--card);border:1px solid var(--line);border-radius:99px;padding:11px 12px;font-size:13px;color:var(--fg)}
+#themeBtn{all:unset;cursor:pointer;border:1px solid var(--line);border-radius:50%;width:42px;height:42px;font-size:16px;text-align:center}
+.proof{margin-top:18px;padding:16px 18px;background:var(--card);border:1px solid var(--line);border-radius:20px;max-width:460px}
+.proof-title{font-size:11px;font-weight:700;color:var(--acc);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px}
+.proof-grid{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-family:ui-monospace,monospace;font-size:12px;color:var(--mut)}
+.proof-grid .val{color:var(--acc);overflow-wrap:anywhere}
+.proof-links{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px}
+.proof-link{font-size:11px;color:var(--acc);border-bottom:1px solid var(--acc);text-decoration:none}
+.wrap{max-width:1360px;margin:0 auto;padding:0 clamp(16px,4vw,48px)}
+</style></head><body>
+<div class="nav"><a class="lg" href="index.html"><i></i>Nectar</a><span style="display:flex;gap:18px;align-items:center"><a href="index.html">Home</a><a href="app.html">App</a><a href="docs.html">Docs</a><select id="netSel"><option value="968">Testnet 968</option><option value="677" selected>Mainnet 677</option></select><button class="btn" id="themeBtn" title="Theme">☀</button><button class="btn" id="connectBtn">Connect wallet</button></span></div>
+<main class="bento">
+<div class="t h rv"><div class="bl b1"></div><div class="bl b2"></div><div class="bl b3"></div><h1>Lend BOT. Earn yield. Borrow when you need it.</h1><p>Deposit BOT as collateral, earn yield from borrowers, and borrow against it with no lock-ups.</p></div>
+<div class="t k k1 rv"><b>75%</b><span>Collateral factor</span></div>
+<div class="t calc rv"><h3>Plan your position</h3><div class="sl"><label>Deposit <b id="dv"></b></label><input type="range" id="dp" min="100" max="10000" step="100" value="2000"><label>Borrow, as % of your limit <b id="bv"></b></label><input type="range" id="bp" min="0" max="100" value="40"></div>
+<div class="out"><div><span>Borrow limit (75%)</span><b id="lim"></b></div><div><span>You borrow</span><b id="bor"></b></div><div><span>Interest per year (5%)</span><b id="int"></b></div><div><span>Liquidates at 80%</span><b id="liq"></b></div></div>
+<div class="acts"><button data-a="Deposited">Deposit</button><button data-a="Borrowed">Borrow</button><button data-a="Repaid">Repay</button><button data-a="Withdrew">Withdraw</button><button data-a="claim">Claim rewards</button></div><p id="posline" style="font-size:13px;color:var(--mut);margin-top:14px;min-height:20px"></p></div>
+<div class="t gau rv"><h3>Health factor</h3><svg viewBox="0 0 240 140" width="100%"><path d="M20 120A100 100 0 0 1 80 28" fill="none" stroke="#e5484d" stroke-width="22" stroke-linecap="round"/><path d="M92 24A100 100 0 0 1 148 24" fill="none" stroke="#ffb020" stroke-width="22" stroke-linecap="round"/><path d="M160 28A100 100 0 0 1 220 120" fill="none" stroke="#2fbf71" stroke-width="22" stroke-linecap="round"/><g id="nd" style="transform-origin:120px 120px;transition:transform .8s cubic-bezier(.2,.9,.2,1)"><path d="M120 120L120 40" stroke="var(--fg)" stroke-width="6" stroke-linecap="round"/></g><circle cx="120" cy="120" r="12" fill="var(--fg)"/></svg><div class="hv" id="hf"></div><div class="stt" id="hs"></div></div>
+<div class="t k3 rv"><b>5%</b><span>Borrow APY</span></div><div class="t k3 rv"><b>80%</b><span>Liquidation threshold</span></div><div class="t k3 rv"><b>0</b><span>Lock-ups or exit penalties</span></div><div class="t k3 rv"><b>677</b><span>BOT Mainnet chain ID</span></div>
+<div class="how"><div class="t rv"><i>1</i><h3>Deposit</h3><p>Lock BOT as collateral. Your deposit earns yield from borrower interest.</p></div><div class="t rv"><i>2</i><h3>Borrow</h3><p>Borrow up to 75% of your collateral value. Interest accrues at 5% APY.</p></div><div class="t rv"><i>3</i><h3>Manage</h3><p>Repay anytime, withdraw anytime. Stay above 1.0 health to avoid liquidation.</p></div></div>
+</main><footer><div class="wrap">
+<p style="margin-bottom:2px">Nectar — lending on BOT Chain. Live on mainnet; real assets with real value.</p>
 <div class="proof">
 <div class="proof-title">Proof on BOT Mainnet</div>
 <div class="proof-grid">
 <span>Chain ID</span><span class="val">677</span>
-<span>Contract</span><span class="val" id="contractAddr">0x9A6613d0A124dAA6280115D97A9cb01cB3F88B92</span>
+<span>Contract</span><span class="val">0x9A6613d0A124dAA6280115D97A9cb01cB3F88B92</span>
 </div>
-<a href="https://botchain.ai" target="_blank" rel="noopener" class="proof-link">BOT Chain Website ↗</a>
-<a href="https://scan.botchain.ai/" target="_blank" rel="noopener" class="proof-link" style="margin-left:14px">BOTScan Explorer ↗</a>
+<div class="proof-links">
+<a href="https://botchain.ai" target="_blank" rel="noopener" class="proof-link">BOT Chain Website &#8599;</a>
+<a href="https://scan.botchain.ai/" target="_blank" rel="noopener" class="proof-link">BOTScan Explorer &#8599;</a>
 </div>
-</footer>
 </div>
-<script type="importmap">
+<p style="margin-top:14px"><a href="index.html">Home</a> · <a href="app.html">Open the app →</a> · <a href="docs.html">Docs</a></p>
+</div></footer>
+<div class="toast" id="toast"></div><script type="importmap">
 {"imports":{"ethers":"https://esm.sh/ethers@6.13.2","@reown/appkit":"https://esm.sh/@reown/appkit@1.8.21","@reown/appkit-adapter-ethers":"https://esm.sh/@reown/appkit-adapter-ethers@1.8.21"}}
 </script>
-<script type="module" src="app.js"></script>
-</body>
-</html>
+<script type="module">
+import { ethers } from 'ethers';
+import { AppKit } from '@reown/appkit';
+import { EthersAdapter } from '@reown/appkit-adapter-ethers';
+
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => [...document.querySelectorAll(s)];
+const fmt = (n, d = 0) => Number(n).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+const fmtE = (n, d = 18) => Number(ethers.formatUnits(n, d)).toLocaleString(undefined, { maximumFractionDigits: 4 });
+let _t;
+function toast(m) { const t = $("#toast"); t.textContent = m; t.classList.add("on"); clearTimeout(_t); _t = setTimeout(() => t.classList.remove("on"), 2600); }
+const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .08 });
+$$(".rv").forEach((e) => io.observe(e));
+
+// theme toggle
+(function themeInit() {
+  const saved = localStorage.getItem("botchain-theme");
+  if (saved) document.documentElement.dataset.theme = saved;
+  const b = $("#themeBtn");
+  const paint = () => { if (b) b.textContent = document.documentElement.dataset.theme === "light" ? "☾" : "☀"; };
+  paint();
+  if (b) b.addEventListener("click", () => {
+    const nxt = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+    document.documentElement.dataset.theme = nxt;
+    localStorage.setItem("botchain-theme", nxt);
+    paint();
+  });
+})();
+
+const PROJECT_ID = 'f018499b1e4a94d961ab67aeeeff3254';
+const NETS = {
+  968: { id: 968, name: 'BOT Chain Testnet', nativeCurrency: { name: 'BOT', symbol: 'BOT', decimals: 18 }, rpcUrls: { default: { http: ['https://rpc.bohr.life'] } }, blockExplorers: { default: { name: 'BOTScan Testnet', url: 'https://scan.bohr.life' } }, testnet: true },
+  677: { id: 677, name: 'BOT Chain', nativeCurrency: { name: 'BOT', symbol: 'BOT', decimals: 18 }, rpcUrls: { default: { http: ['https://rpc.botchain.ai'] } }, blockExplorers: { default: { name: 'BOTScan', url: 'https://scan.botchain.ai' } } },
+};
+const CHAINS = {
+  968: { nectar: '0x500D06C64A066A577b0838ddd4ea464379d8A39d', wbot: '0xD8FBaBf44B2dbb427d881F8Ea66F14D8287A55c0' },
+  677: { nectar: '0x9A6613d0A124dAA6280115D97A9cb01cB3F88B92', wbot: '0xD5452816194a3784dBa983426cCe7c122F4abd30' },
+};
+const NECTAR_ABI = [
+  'function totalDeposits() view returns (uint256)',
+  'function totalBorrows() view returns (uint256)',
+  'function deposits(address) view returns (uint256)',
+  'function debtOf(address) view returns (uint256)',
+  'function borrowInterest(address) view returns (uint256)',
+  'function pendingLenderReward(address) view returns (uint256)',
+  'function getHealthFactor(address) view returns (uint256)',
+  'function deposit(uint256)',
+  'function withdraw(uint256)',
+  'function borrow(uint256)',
+  'function repay(uint256)',
+  'function claimLenderReward()',
+];
+const ERC20_ABI = [
+  'function balanceOf(address) view returns (uint256)',
+  'function approve(address,uint256) returns (bool)',
+  'function allowance(address,address) view returns (uint256)',
+  'function deposit() payable',
+];
+const GAS = { gasPrice: ethers.parseUnits('20', 'gwei') };
+
+let currentChainId = 677;
+let account = null;
+let appkit = null;
+
+function rpc() { return new ethers.JsonRpcProvider(currentChainId === 677 ? 'https://rpc.botchain.ai' : 'https://rpc.bohr.life'); }
+function contracts() {
+  const c = CHAINS[currentChainId];
+  if (!c) return null;
+  return new ethers.Contract(c.nectar, NECTAR_ABI, rpc());
+}
+const short = (a) => (a ? a.slice(0, 6) + '…' + a.slice(-4) : '—');
+
+function initAppKit() {
+  const adapter = new EthersAdapter();
+  appkit = new AppKit({
+    networks: [NETS[968], NETS[677]], adapters: [adapter], projectId: PROJECT_ID, themeMode: 'dark',
+    metadata: { name: 'Nectar', description: 'Lending on BOT Chain', url: location.origin, icons: [] },
+  });
+  appkit.subscribeAccount((s) => {
+    account = s.address || null;
+    const b = $("#connectBtn");
+    if (b) b.textContent = account ? short(account) : 'Connect wallet';
+    refresh();
+  });
+  const cb = $("#connectBtn");
+  if (cb) cb.addEventListener("click", () => appkit.open());
+  const ns = $("#netSel");
+  if (ns) ns.addEventListener("change", (e) => { currentChainId = Number(e.target.value); refresh(); });
+}
+
+// planner math (same units in/out; health = deposits / debt)
+function up() {
+  const d = +$("#dp").value, p = +$("#bp").value / 100, lim = d * .75, b = lim * p;
+  const h = b ? d / b : Infinity;
+  $("#dv").textContent = fmt(d) + " BOT";
+  $("#bv").textContent = Math.round(p * 100) + "%";
+  $("#lim").textContent = fmt(lim);
+  $("#bor").textContent = fmt(b);
+  $("#int").textContent = fmt(b * .05, 1);
+  $("#liq").textContent = fmt(d * .8);
+  const hh = Math.min(h, 3);
+  $("#hf").textContent = b ? h.toFixed(2) : "∞";
+  $("#nd").style.transform = "rotate(" + (-90 + ((hh - 1) / 2) * 180) + "deg)";
+  const s = !b ? ["No debt", "#2fbf71"] : h < 1.2 ? ["Near liquidation", "#e5484d"] : h < 1.5 ? ["Watch closely", "#d98a00"] : ["Healthy", "#2fbf71"];
+  $("#hs").textContent = s[0];
+  $("#hs").style.color = s[1];
+}
+$("#dp").oninput = $("#bp").oninput = up;
+
+async function refresh() {
+  try {
+    const c = contracts();
+    if (!c) return;
+    if (account) {
+      const n = new ethers.Contract(CHAINS[currentChainId].nectar, NECTAR_ABI, rpc());
+      const [dep, debt, rew] = await Promise.all([n.deposits(account), n.debtOf(account), n.pendingLenderReward(account)]);
+      const pl = $("#posline");
+      if (pl) pl.textContent = "Your position: " + fmtE(dep) + " deposited · " + fmtE(debt) + " debt · " + fmtE(rew) + " rewards" + (rew > 0n ? " — claim below" : "");
+    }
+  } catch (e) { console.error(e); }
+  up();
+}
+
+async function ensureWbot(s, me, amount) {
+  const c = CHAINS[currentChainId];
+  const t = new ethers.Contract(c.wbot, ERC20_ABI, s);
+  if ((await t.balanceOf(me)) >= amount) return;
+  const shortfall = amount - (await t.balanceOf(me));
+  const native = await s.provider.getBalance(me);
+  if (native < shortfall + ethers.parseEther('0.005')) throw new Error("Need more BOT (wrap + gas)");
+  toast("Wrapping BOT…");
+  await (await t.deposit({ value: shortfall, ...GAS })).wait();
+}
+
+async function approveIfNeeded(s, me, amount) {
+  const c = CHAINS[currentChainId];
+  const t = new ethers.Contract(c.wbot, ERC20_ABI, s);
+  if ((await t.allowance(me, c.nectar)) < amount) {
+    toast("Approving…");
+    await (await t.approve(c.nectar, ethers.MaxUint256, GAS)).wait();
+  }
+}
+
+async function doTx(label, fn) {
+  if (!account) { appkit.open(); return; }
+  try {
+    const c = CHAINS[currentChainId];
+    const s = await appkit.getSigner();
+    const me = await s.getAddress();
+    const n = new ethers.Contract(c.nectar, NECTAR_ABI, s);
+    await fn(n, s, me);
+    toast(label + " confirmed.");
+    refresh();
+  } catch (e) { toast(String(e.shortMessage || e.reason || e.message || "failed").slice(0, 90)); }
+}
+
+$$(".acts button").forEach((b) => b.addEventListener("click", () => {
+  const d = +$("#dp").value, p = +$("#bp").value / 100, bor = d * .75 * p;
+  const label = b.textContent.trim();
+  if (label === "Deposit") {
+    if (!(d > 0)) return toast("Set a deposit amount");
+    const amt = ethers.parseEther(String(d));
+    doTx("Deposited", async (n, s, me) => { await ensureWbot(s, me, amt); await approveIfNeeded(s, me, amt); await (await n.deposit(amt, GAS)).wait(); });
+  } else if (label === "Borrow") {
+    if (!(bor > 0)) return toast("Raise the borrow slider");
+    const amt = ethers.parseEther(bor.toFixed(6));
+    doTx("Borrowed", async (n) => { await (await n.borrow(amt, GAS)).wait(); });
+  } else if (label === "Repay") {
+    doTx("Repaid", async (n, s, me) => {
+      const debt = await n.debtOf(me);
+      if (debt <= 0n) return toast("Nothing to repay");
+      const pay = bor > 0 ? ethers.parseEther(Math.min(bor, Number(ethers.formatEther(debt))).toFixed(6)) : debt;
+      await ensureWbot(s, me, 0n).catch(() => {});
+      await approveIfNeeded(s, me, pay);
+      await (await n.repay(pay, GAS)).wait();
+    });
+  } else if (label === "Withdraw") {
+    doTx("Withdrawn", async (n, s, me) => {
+      const dep = await n.deposits(me);
+      if (dep <= 0n) return toast("Nothing deposited");
+      const amt = ethers.parseEther(Math.min(d, Number(ethers.formatEther(dep))).toFixed(6));
+      await (await n.withdraw(amt, GAS)).wait();
+    });
+  } else if (label === "Claim rewards") {
+    doTx("Claimed", async (n) => { await (await n.claimLenderReward(GAS)).wait(); });
+  }
+}));
+
+initAppKit();
+refresh();
+
+</script></body></html>
