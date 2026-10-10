@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ---- mainnet contract (BOT Chain 677) ----
 const WBOT = '0xD5452816194a3784dBa983426cCe7c122F4abd30';
-const CONTRACT_ADDR = '0x9F28b120F2D442f5DDb7FAe0e61c7B0584Ca7830';
+const CONTRACT_ADDR = '0x9A6613d0A124dAA6280115D97A9cb01cB3F88B92';
 const GAS = { gasPrice: ethers.parseUnits('20', 'gwei') };
 const readProvider = new ethers.JsonRpcProvider('https://rpc.botchain.ai');
 const NECTAR_ABI = [
@@ -150,6 +150,10 @@ const NECTAR_ABI = [
   'function totalBorrows() view returns (uint256)',
   'function deposits(address) view returns (uint256)',
   'function borrows(address) view returns (uint256)',
+  'function debtOf(address) view returns (uint256)',
+  'function borrowInterest(address) view returns (uint256)',
+  'function pendingLenderReward(address) view returns (uint256)',
+  'function claimLenderReward()',
   'function getHealthFactor(address) view returns (uint256)',
   'function deposit(uint256)',
   'function withdraw(uint256)',
@@ -179,12 +183,14 @@ async function refreshReads() {
     $('statTVL').textContent = fmtBot(td);
     $('statBorrows').textContent = fmtBot(tb);
     if (account) {
-      const [d, b, hf] = await Promise.all([c.deposits(account), c.borrows(account), c.getHealthFactor(account)]);
+      const [d, debt, interest, rew, hf] = await Promise.all([c.deposits(account), c.debtOf(account), c.borrowInterest(account), c.pendingLenderReward(account), c.getHealthFactor(account)]);
       $('yourDeposit').textContent = fmtBot(d);
-      $('yourBorrow').textContent = fmtBot(b);
+      $('yourBorrow').textContent = fmtBot(debt);
       $('riskCollateral').textContent = fmtBot(d);
-      $('riskDebt').textContent = fmtBot(b);
-      if (b === 0n) {
+      $('riskDebt').textContent = fmtBot(debt);
+      $('yourInterest').textContent = fmtBot(interest);
+      $('yourRewards').textContent = fmtBot(rew);
+      if (debt === 0n) {
         $('healthFactor').textContent = 'infinite';
         $('healthFill').style.width = '100%';
         $('healthFill').classList.remove('danger');
@@ -199,6 +205,8 @@ async function refreshReads() {
       $('yourBorrow').textContent = 'connect wallet';
       $('riskCollateral').textContent = '—';
       $('riskDebt').textContent = '—';
+      $('yourInterest').textContent = '—';
+      $('yourRewards').textContent = '—';
       $('healthFactor').textContent = '—';
       $('healthFill').style.width = '0%';
     }
@@ -268,7 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setInterval(refreshReads, 30000);
 
   const wire = (id, label) => { const b = $(id); b.dataset.label = b.textContent; return b; };
-  const depBtn = wire('depBtn'), borrowBtn = wire('borrowBtn'), repayBtn = wire('repayBtn'), wdBtn = wire('wdBtn');
+  const depBtn = wire('depBtn'), borrowBtn = wire('borrowBtn'), repayBtn = wire('repayBtn'), wdBtn = wire('wdBtn'), claimBtn = wire('claimBtn');
 
   depBtn.addEventListener('click', () => {
     const amt = parseAmt($('depAmt'));
@@ -296,5 +304,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const amt = parseAmt($('wdAmt'));
     if (!amt) { amtGuard(wdBtn, 'Enter amount'); return; }
     runTx(wdBtn, 'Withdrawn', () => nectarRead().connect(signer).withdraw(amt, GAS));
+  });
+  claimBtn.addEventListener('click', () => {
+    runTx(claimBtn, 'Claimed', () => nectarRead().connect(signer).claimLenderReward(GAS));
   });
 });

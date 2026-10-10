@@ -102,11 +102,14 @@ footer{padding:36px 0;border-top:1px solid var(--hairline);color:var(--muted);fo
 <div class="action-row"><label>Borrow</label><input id="borrowAmt" type="number" step="0.001" placeholder="0.500"><button class="btn btn-primary" id="borrowBtn">Borrow →</button></div>
 <div class="action-row"><label>Repay</label><input id="repayAmt" type="number" step="0.001" placeholder="0.100"><button class="btn btn-ghost" id="repayBtn">Repay →</button></div>
 <div class="action-row"><label>Withdraw</label><input id="wdAmt" type="number" step="0.001" placeholder="0.500"><button class="btn btn-ghost" id="wdBtn">Withdraw →</button></div>
+<div class="action-row"><label>Lender rewards</label><button class="btn btn-primary" id="claimBtn" style="grid-column:2/4">Claim →</button></div>
 </div>
 <div class="panel">
 <div class="panel-head"><h3>Your position</h3><div class="dot"></div></div>
 <div class="kv"><span>Your deposit</span><b id="yourDeposit">—</b></div>
 <div class="kv"><span>Your borrow</span><b id="yourBorrow">—</b></div>
+<div class="kv"><span>Accrued interest</span><b id="yourInterest">—</b></div>
+<div class="kv"><span>Lender rewards</span><b id="yourRewards">—</b></div>
 <div class="kv"><span>Withdraw anytime</span><b>no lock</b></div>
 <div class="kv"><span>Repay anytime</span><b>no penalty</b></div>
 </div>
@@ -142,7 +145,7 @@ footer{padding:36px 0;border-top:1px solid var(--hairline);color:var(--muted);fo
 <div class="proof-title">Proof on BOT Mainnet</div>
 <div class="proof-grid">
 <span>Chain ID</span><span class="val">677</span>
-<span>Contract</span><span class="val" id="contractAddr">0x9F28b120F2D442f5DDb7FAe0e61c7B0584Ca7830</span>
+<span>Contract</span><span class="val" id="contractAddr">0x9A6613d0A124dAA6280115D97A9cb01cB3F88B92</span>
 </div>
 <a href="https://botchain.ai" target="_blank" rel="noopener" class="proof-link">BOT Chain Website ↗</a>
 <a href="https://scan.botchain.ai/" target="_blank" rel="noopener" class="proof-link" style="margin-left:14px">BOTScan Explorer ↗</a>
