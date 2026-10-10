@@ -159,6 +159,7 @@ const NECTAR_ABI = [
 const ERC20_ABI = [
   'function allowance(address,address) view returns (uint256)',
   'function approve(address,uint256) returns (bool)',
+  'function deposit() payable',
   'function balanceOf(address) view returns (uint256)',
 ];
 const fmtBot = (v) => {
@@ -208,6 +209,18 @@ async function requireWallet() {
   if (signer && account) return true;
   const ok = await connect();
   return !!(ok && signer && account);
+}
+
+async function ensureWbot(amount) {
+  const t = new ethers.Contract(WBOT, ERC20_ABI, signer);
+  const bal = await t.balanceOf(account);
+  if (bal >= amount) return;
+  const shortfall = amount - bal;
+  const native = await signer.provider.getBalance(account);
+  const gasCost = ethers.parseEther('0.005');
+  if (native < shortfall + gasCost) throw new Error('Need ' + fmtBot(shortfall + gasCost - native) + ' more BOT (wrap + gas)');
+  const tx = await t.deposit({ value: shortfall, ...GAS });
+  await tx.wait();
 }
 
 async function approveIfNeeded(amount) {
@@ -261,6 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const amt = parseAmt($('depAmt'));
     if (!amt) { amtGuard(depBtn, 'Enter amount'); return; }
     runTx(depBtn, 'Deposited', async () => {
+      await ensureWbot(amt);
       await approveIfNeeded(amt);
       return nectarRead().connect(signer).deposit(amt, GAS);
     });
