@@ -21,7 +21,7 @@ const botMainnet = {
 
 const modal = createAppKit({
   adapters: [new EthersAdapter()],
-  networks: [botTestnet, botMainnet],
+  networks: [botMainnet, botTestnet],
   defaultNetwork: botMainnet,
   projectId: PROJECT_ID,
   metadata: { name: 'Nectar', description: 'Lending protocol on BOT Chain', url: location.origin, icons: [location.origin + '/logo.png'] },
