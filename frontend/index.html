@@ -137,6 +137,22 @@ function contracts() {
 }
 const short = (a) => (a ? a.slice(0, 6) + '…' + a.slice(-4) : '—');
 
+function getProvider() {
+  try {
+    if (typeof appkit !== 'undefined' && appkit && typeof appkit.getWalletProvider === 'function') {
+      const p = appkit.getWalletProvider('eip155') || appkit.getWalletProvider();
+      if (p) return p;
+    }
+  } catch (e) {}
+  return null;
+}
+async function getSigner() {
+  const wp = getProvider();
+  if (!wp) { try { appkit.open(); } catch (e) {} return null; }
+  return new ethers.BrowserProvider(wp).getSigner();
+}
+
+
 function initAppKit() {
   const adapter = new EthersAdapter();
   appkit = new AppKit({
@@ -212,7 +228,7 @@ async function doTx(label, fn) {
   if (!account) { appkit.open(); return; }
   try {
     const c = CHAINS[currentChainId];
-    const s = await appkit.getSigner();
+    const s = await getSigner(); if (!s) return;;
     const me = await s.getAddress();
     const n = new ethers.Contract(c.nectar, NECTAR_ABI, s);
     await fn(n, s, me);
